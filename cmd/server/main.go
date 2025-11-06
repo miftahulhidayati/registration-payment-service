@@ -1,0 +1,72 @@
+package main
+
+import (
+    "context"
+    "fmt"
+    "log"
+    "os"
+    "os/signal"
+    "syscall"
+    "time"
+
+    "github.com/gofiber/fiber/v2"
+
+    "example.com/registration-payment-service/internal/config"
+    "example.com/registration-payment-service/internal/http/handlers"
+    "example.com/registration-payment-service/internal/kafka"
+    "example.com/registration-payment-service/internal/repository"
+)
+
+func main() {
+    cfg, err := config.Load()
+    if err != nil {
+        log.Fatalf("failed to load config: %v", err)
+    }
+
+    // Init Postgres
+    pg, err := repository.NewPostgres(cfg.DBURL)
+    if err != nil {
+        log.Fatalf("failed to init postgres: %v", err)
+    }
+    defer pg.Close()
+
+    // Init Kafka producer (best-effort)
+    producer, err := kafka.NewProducer(cfg.KafkaBrokers)
+    if err != nil {
+        log.Printf("warning: kafka producer init failed: %v", err)
+    }
+    if producer != nil {
+        defer producer.Close()
+    }
+
+    app := fiber.New()
+
+    // Health
+    app.Get("/healthz", func(c *fiber.Ctx) error {
+        return c.JSON(fiber.Map{"status": "ok"})
+    })
+
+    // API v1 routes
+    api := app.Group("/api/v1")
+    registrations := handlers.NewRegistrationsHandler(pg, producer, cfg)
+    registrations.Register(api)
+
+    // Graceful shutdown
+    go func() {
+        if err := app.Listen(":" + cfg.AppPort); err != nil {
+            log.Fatalf("fiber server error: %v", err)
+        }
+    }()
+
+    stop := make(chan os.Signal, 1)
+    signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+    <-stop
+
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    if err := app.ShutdownWithContext(ctx); err != nil {
+        fmt.Println("server shutdown error:", err)
+    }
+}
+
+
