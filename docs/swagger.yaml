@@ -1,0 +1,336 @@
+basePath: /api/v1
+definitions:
+  handlers.cancelRequest:
+    properties:
+      reason:
+        type: string
+    type: object
+  handlers.createRegistrationRequest:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      emergency_contact_name:
+        type: string
+      emergency_contact_phone:
+        type: string
+      emergency_contact_relation:
+        type: string
+      event_id:
+        type: string
+      full_name:
+        type: string
+      gender:
+        type: string
+      phone:
+        type: string
+      special_needs:
+        type: string
+      user_id:
+        type: string
+    type: object
+  handlers.updateRegistrationRequest:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      emergency_contact_name:
+        type: string
+      emergency_contact_phone:
+        type: string
+      emergency_contact_relation:
+        type: string
+      full_name:
+        type: string
+      notes:
+        type: string
+      phone:
+        type: string
+      special_needs:
+        type: string
+    type: object
+  repository.Registration:
+    properties:
+      address:
+        type: string
+      cancellation_reason:
+        type: string
+      cancelled_at:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      emergency_contact_name:
+        type: string
+      emergency_contact_phone:
+        type: string
+      emergency_contact_relation:
+        type: string
+      event_id:
+        type: string
+      full_name:
+        type: string
+      gender:
+        type: string
+      notes:
+        type: string
+      phone:
+        type: string
+      registration_date:
+        type: string
+      registration_id:
+        type: string
+      special_needs:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for managing event registrations and payments.
+  title: Registration Payment Service API
+  version: "1.0"
+paths:
+  /registrations:
+    get:
+      description: Get a list of registrations with pagination
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/repository.Registration'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List registrations
+      tags:
+      - registrations
+    post:
+      consumes:
+      - application/json
+      description: Register a user for an event
+      parameters:
+      - description: Registration Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createRegistrationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/repository.Registration'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new registration
+      tags:
+      - registrations
+  /registrations/{id}:
+    get:
+      description: Get details of a specific registration
+      parameters:
+      - description: Registration ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repository.Registration'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get a registration by ID
+      tags:
+      - registrations
+    put:
+      consumes:
+      - application/json
+      description: Update details of an existing registration
+      parameters:
+      - description: Registration ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.updateRegistrationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repository.Registration'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update a registration
+      tags:
+      - registrations
+  /registrations/{id}/cancel:
+    post:
+      consumes:
+      - application/json
+      description: Cancel a registration with a reason
+      parameters:
+      - description: Registration ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Cancel Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.cancelRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Cancel a registration
+      tags:
+      - registrations
+  /registrations/{id}/payment:
+    get:
+      description: Get payment status and details
+      parameters:
+      - description: Registration ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get payment info
+      tags:
+      - payments
+    post:
+      consumes:
+      - application/json
+      description: Upload proof of payment for a registration
+      parameters:
+      - description: Registration ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payment Proof
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            amount:
+              format: float64
+              type: number
+            payment_proof_url:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Upload payment proof
+      tags:
+      - payments
+  /registrations/{id}/payment/verify:
+    patch:
+      description: Verify and approve a payment
+      parameters:
+      - description: Registration ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Verify payment
+      tags:
+      - payments
+swagger: "2.0"

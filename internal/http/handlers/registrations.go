@@ -51,6 +51,17 @@ type createRegistrationRequest struct {
     SpecialNeeds          *string    `json:"special_needs"`
 }
 
+// CreateRegistration godoc
+// @Summary Create a new registration
+// @Description Register a user for an event
+// @Tags registrations
+// @Accept json
+// @Produce json
+// @Param request body createRegistrationRequest true "Registration Request"
+// @Success 201 {object} repository.Registration
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /registrations [post]
 func (h *RegistrationsHandler) createRegistration(c *fiber.Ctx) error {
     var req createRegistrationRequest
     if err := c.BodyParser(&req); err != nil {
@@ -95,6 +106,14 @@ func (h *RegistrationsHandler) createRegistration(c *fiber.Ctx) error {
     return c.Status(http.StatusCreated).JSON(reg)
 }
 
+// ListRegistrations godoc
+// @Summary List registrations
+// @Description Get a list of registrations with pagination
+// @Tags registrations
+// @Produce json
+// @Success 200 {array} repository.Registration
+// @Failure 500 {object} map[string]interface{}
+// @Router /registrations [get]
 func (h *RegistrationsHandler) listRegistrations(c *fiber.Ctx) error {
     // Simple pagination defaults
     limit := 20
@@ -107,6 +126,17 @@ func (h *RegistrationsHandler) listRegistrations(c *fiber.Ctx) error {
     return c.JSON(items)
 }
 
+// GetRegistration godoc
+// @Summary Get a registration by ID
+// @Description Get details of a specific registration
+// @Tags registrations
+// @Produce json
+// @Param id path string true "Registration ID"
+// @Success 200 {object} repository.Registration
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /registrations/{id} [get]
 func (h *RegistrationsHandler) getRegistration(c *fiber.Ctx) error {
     idStr := c.Params("id")
     id, err := uuid.Parse(idStr)
@@ -136,6 +166,18 @@ type updateRegistrationRequest struct {
     Notes                   *string `json:"notes"`
 }
 
+// UpdateRegistration godoc
+// @Summary Update a registration
+// @Description Update details of an existing registration
+// @Tags registrations
+// @Accept json
+// @Produce json
+// @Param id path string true "Registration ID"
+// @Param request body updateRegistrationRequest true "Update Request"
+// @Success 200 {object} repository.Registration
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /registrations/{id} [put]
 func (h *RegistrationsHandler) updateRegistration(c *fiber.Ctx) error {
     id, err := uuid.Parse(c.Params("id"))
     if err != nil {
@@ -168,6 +210,18 @@ type cancelRequest struct {
     Reason string `json:"reason"`
 }
 
+// CancelRegistration godoc
+// @Summary Cancel a registration
+// @Description Cancel a registration with a reason
+// @Tags registrations
+// @Accept json
+// @Produce json
+// @Param id path string true "Registration ID"
+// @Param request body cancelRequest true "Cancel Request"
+// @Success 204 "No Content"
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /registrations/{id}/cancel [post]
 func (h *RegistrationsHandler) cancelRegistration(c *fiber.Ctx) error {
     id, err := uuid.Parse(c.Params("id"))
     if err != nil {
@@ -193,6 +247,17 @@ func (h *RegistrationsHandler) cancelRegistration(c *fiber.Ctx) error {
 }
 
 // Payment stubs (replace with your implementation later)
+// UploadPaymentProof godoc
+// @Summary Upload payment proof
+// @Description Upload proof of payment for a registration
+// @Tags payments
+// @Accept json
+// @Produce json
+// @Param id path string true "Registration ID"
+// @Param request body object{amount=float64,payment_proof_url=string} true "Payment Proof"
+// @Success 202 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Router /registrations/{id}/payment [post]
 func (h *RegistrationsHandler) uploadPaymentProof(c *fiber.Ctx) error {
     // Accept minimal JSON for now
     type reqT struct {
@@ -216,11 +281,27 @@ func (h *RegistrationsHandler) uploadPaymentProof(c *fiber.Ctx) error {
     return c.Status(http.StatusAccepted).JSON(fiber.Map{"status": "payment uploaded"})
 }
 
+// GetPaymentInfo godoc
+// @Summary Get payment info
+// @Description Get payment status and details
+// @Tags payments
+// @Produce json
+// @Param id path string true "Registration ID"
+// @Success 200 {object} map[string]interface{}
+// @Router /registrations/{id}/payment [get]
 func (h *RegistrationsHandler) getPaymentInfo(c *fiber.Ctx) error {
     // Placeholder response
     return c.JSON(fiber.Map{"registration_id": c.Params("id"), "payment": fiber.Map{"status": "pending"}})
 }
 
+// VerifyPayment godoc
+// @Summary Verify payment
+// @Description Verify and approve a payment
+// @Tags payments
+// @Produce json
+// @Param id path string true "Registration ID"
+// @Success 200 {object} map[string]interface{}
+// @Router /registrations/{id}/payment/verify [patch]
 func (h *RegistrationsHandler) verifyPayment(c *fiber.Ctx) error {
     id := c.Params("id")
     // In real impl: update payments + set registration to confirmed
