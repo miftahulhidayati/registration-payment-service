@@ -1,13 +1,13 @@
 package kafka
 
 import (
-    "context"
-    "encoding/json"
-    "log"
-    "time"
+	"context"
+	"encoding/json"
+	"log"
+	"time"
 
-    "github.com/segmentio/kafka-go"
-    "github.com/miftahulhidayati/registration-payment-service/internal/repository"
+	"github.com/miftahulhidayati/registration-payment-service/internal/repository"
+	"github.com/segmentio/kafka-go"
 )
 
 type EventStatusChanged struct {

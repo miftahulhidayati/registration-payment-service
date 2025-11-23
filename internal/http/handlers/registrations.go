@@ -1,16 +1,16 @@
 package handlers
 
 import (
-    "context"
-    "net/http"
-    "time"
+	"context"
+	"net/http"
+	"time"
 
-    "github.com/gofiber/fiber/v2"
-    "github.com/google/uuid"
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 
-    "github.com/miftahulhidayati/registration-payment-service/internal/config"
-    "github.com/miftahulhidayati/registration-payment-service/internal/kafka"
-    "github.com/miftahulhidayati/registration-payment-service/internal/repository"
+	"github.com/miftahulhidayati/registration-payment-service/internal/config"
+	"github.com/miftahulhidayati/registration-payment-service/internal/kafka"
+	"github.com/miftahulhidayati/registration-payment-service/internal/repository"
 )
 
 type RegistrationsHandler struct {
