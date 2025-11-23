@@ -4,95 +4,207 @@ definitions:
     properties:
       reason:
         type: string
+        example: "Testing cancellation"
+    required:
+      - reason
     type: object
   handlers.createRegistrationRequest:
     properties:
       address:
         type: string
+        example: "Test Address"
       email:
         type: string
+        example: "test@example.com"
       emergency_contact_name:
         type: string
+        example: "Emergency Contact"
       emergency_contact_phone:
         type: string
+        example: "08123456788"
       emergency_contact_relation:
         type: string
+        example: "friend"
       event_id:
         type: string
+        example: "00000000-0000-0000-0000-000000000001"
       full_name:
         type: string
+        example: "Test User"
       gender:
         type: string
+        example: "male"
+        enum: ["male", "female"]
       phone:
         type: string
+        example: "08123456789"
       special_needs:
         type: string
+        example: "None"
       user_id:
         type: string
+        example: "00000000-0000-0000-0000-000000000003"
+    required:
+      - event_id
+      - full_name
+      - gender
+      - phone
+      - email
     type: object
   handlers.updateRegistrationRequest:
     properties:
       address:
         type: string
+        example: "Updated Address"
       email:
         type: string
+        example: "updated@example.com"
       emergency_contact_name:
         type: string
+        example: "Updated Emergency Contact"
       emergency_contact_phone:
         type: string
+        example: "08123456799"
       emergency_contact_relation:
         type: string
+        example: "spouse"
       full_name:
         type: string
+        example: "Test User Updated"
       notes:
         type: string
+        example: "Additional notes"
       phone:
         type: string
+        example: "08123456790"
       special_needs:
         type: string
+        example: "Wheelchair access"
     type: object
   repository.Registration:
     properties:
       address:
         type: string
+        example: "Test Address"
       cancellation_reason:
         type: string
+        example: "Change of plans"
       cancelled_at:
         type: string
+        format: date-time
+        example: "2025-11-24T10:30:00Z"
       created_at:
         type: string
+        format: date-time
+        example: "2025-11-24T09:00:00Z"
       email:
         type: string
+        example: "test@example.com"
       emergency_contact_name:
         type: string
+        example: "Emergency Contact"
       emergency_contact_phone:
         type: string
+        example: "08123456788"
       emergency_contact_relation:
         type: string
+        example: "friend"
       event_id:
         type: string
+        example: "00000000-0000-0000-0000-000000000001"
       full_name:
         type: string
+        example: "Test User"
       gender:
         type: string
+        example: "male"
+        enum: ["male", "female"]
       notes:
         type: string
+        example: "Additional registration notes"
       phone:
         type: string
+        example: "08123456789"
       registration_date:
         type: string
+        format: date-time
+        example: "2025-11-24T09:00:00Z"
       registration_id:
         type: string
+        example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
       special_needs:
         type: string
+        example: "None"
       status:
         type: string
+        example: "pending"
+        enum: ["pending", "confirmed", "cancelled"]
       updated_at:
         type: string
+        format: date-time
+        example: "2025-11-24T09:30:00Z"
       user_id:
         type: string
+        example: "00000000-0000-0000-0000-000000000003"
     type: object
-host: localhost:8080
+  handlers.paymentRequest:
+    properties:
+      amount:
+        type: number
+        format: float64
+        example: 150000
+        description: "Payment amount in Indonesian Rupiah"
+      payment_proof_url:
+        type: string
+        example: "https://example.com/proof.jpg"
+        description: "URL to payment proof image"
+    required:
+      - amount
+      - payment_proof_url
+    type: object
+  handlers.paymentResponse:
+    properties:
+      status:
+        type: string
+        example: "payment uploaded"
+      message:
+        type: string
+        example: "Payment proof has been uploaded successfully"
+    type: object
+  handlers.paymentInfo:
+    properties:
+      registration_id:
+        type: string
+        example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      payment:
+        type: object
+        properties:
+          status:
+            type: string
+            example: "pending"
+            enum: ["pending", "verified", "rejected"]
+          amount:
+            type: number
+            format: float64
+            example: 150000
+          proof_url:
+            type: string
+            example: "https://example.com/proof.jpg"
+          uploaded_at:
+            type: string
+            format: date-time
+            example: "2025-11-24T10:00:00Z"
+    type: object
+  handlers.verifyResponse:
+    properties:
+      status:
+        type: string
+        example: "verified"
+      message:
+        type: string
+        example: "Payment has been verified successfully"
+    type: object
+host: localhost:3003
 info:
   contact: {}
   description: API for managing event registrations and payments.
@@ -270,6 +382,15 @@ paths:
         "200":
           description: OK
           schema:
+            $ref: '#/definitions/handlers.paymentInfo'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
             additionalProperties: true
             type: object
       summary: Get payment info
@@ -290,21 +411,14 @@ paths:
         name: request
         required: true
         schema:
-          properties:
-            amount:
-              format: float64
-              type: number
-            payment_proof_url:
-              type: string
-          type: object
+          $ref: '#/definitions/handlers.paymentRequest'
       produces:
       - application/json
       responses:
         "202":
           description: Accepted
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.paymentResponse'
         "400":
           description: Bad Request
           schema:
@@ -327,6 +441,15 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/handlers.verifyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
           schema:
             additionalProperties: true
             type: object

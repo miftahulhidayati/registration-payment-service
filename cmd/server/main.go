@@ -23,7 +23,7 @@ import (
 // @title Registration Payment Service API
 // @version 1.0
 // @description API for managing event registrations and payments.
-// @host localhost:8080
+// @host localhost:3003
 // @BasePath /api/v1
 func main() {
 	cfg, err := config.Load()
@@ -46,6 +46,13 @@ func main() {
 	if producer != nil {
 		defer producer.Close()
 	}
+
+	// Init Kafka consumer (event.status.changed)
+	go func() {
+		if err := kafka.StartConsumer(cfg.KafkaBrokers, cfg.KafkaTopicEventStatus, "regpay-consumer-group", pg); err != nil {
+			log.Printf("warning: kafka consumer init failed: %v", err)
+		}
+	}()
 
 	app := fiber.New()
 
