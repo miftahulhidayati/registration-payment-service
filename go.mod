@@ -1,4 +1,4 @@
-module example.com/registration-payment-service
+module github.com/miftahulhidayati/registration-payment-service
 
 go 1.24.0
 

@@ -8,9 +8,9 @@ import (
     "github.com/gofiber/fiber/v2"
     "github.com/google/uuid"
 
-    "example.com/registration-payment-service/internal/config"
-    "example.com/registration-payment-service/internal/kafka"
-    "example.com/registration-payment-service/internal/repository"
+    "github.com/miftahulhidayati/registration-payment-service/internal/config"
+    "github.com/miftahulhidayati/registration-payment-service/internal/kafka"
+    "github.com/miftahulhidayati/registration-payment-service/internal/repository"
 )
 
 type RegistrationsHandler struct {

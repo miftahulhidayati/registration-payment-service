@@ -1,12 +1,9 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API for managing event registrations and payments. This service handles event registrations, payment processing, and user management with Kafka integration.",
+        "description": "API for managing event registrations and payments.",
         "title": "Registration Payment Service API",
-        "contact": {
-            "name": "Registration Payment Service",
-            "email": "support@example.com"
-        },
+        "contact": {},
         "version": "1.0"
     },
     "host": "localhost:3003",
@@ -266,19 +263,6 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.paymentInfo"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
@@ -311,7 +295,16 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.paymentRequest"
+                            "type": "object",
+                            "properties": {
+                                "amount": {
+                                    "type": "number",
+                                    "format": "float64"
+                                },
+                                "payment_proof_url": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 ],
@@ -319,7 +312,8 @@
                     "202": {
                         "description": "Accepted",
                         "schema": {
-                            "$ref": "#/definitions/handlers.paymentResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -355,19 +349,6 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.verifyResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
@@ -379,77 +360,47 @@
     "definitions": {
         "handlers.cancelRequest": {
             "type": "object",
-            "required": ["reason"],
             "properties": {
                 "reason": {
-                    "type": "string",
-                    "example": "Testing cancellation",
-                    "description": "Reason for cancelling the registration"
+                    "type": "string"
                 }
             }
         },
         "handlers.createRegistrationRequest": {
             "type": "object",
-            "required": ["event_id", "full_name", "gender", "phone", "email"],
             "properties": {
                 "address": {
-                    "type": "string",
-                    "example": "Test Address",
-                    "description": "User's address"
+                    "type": "string"
                 },
                 "email": {
-                    "type": "string",
-                    "example": "test@example.com",
-                    "format": "email",
-                    "description": "User's email address"
+                    "type": "string"
                 },
                 "emergency_contact_name": {
-                    "type": "string",
-                    "example": "Emergency Contact",
-                    "description": "Name of emergency contact person"
+                    "type": "string"
                 },
                 "emergency_contact_phone": {
-                    "type": "string",
-                    "example": "08123456788",
-                    "description": "Emergency contact phone number"
+                    "type": "string"
                 },
                 "emergency_contact_relation": {
-                    "type": "string",
-                    "example": "friend",
-                    "description": "Relationship to emergency contact"
+                    "type": "string"
                 },
                 "event_id": {
-                    "type": "string",
-                    "example": "00000000-0000-0000-0000-000000000001",
-                    "format": "uuid",
-                    "description": "Event UUID to register for"
+                    "type": "string"
                 },
                 "full_name": {
-                    "type": "string",
-                    "example": "Test User",
-                    "description": "Full name of the registrant"
+                    "type": "string"
                 },
                 "gender": {
-                    "type": "string",
-                    "example": "male",
-                    "enum": ["male", "female"],
-                    "description": "Gender of the registrant"
+                    "type": "string"
                 },
                 "phone": {
-                    "type": "string",
-                    "example": "08123456789",
-                    "description": "Phone number of the registrant"
+                    "type": "string"
                 },
                 "special_needs": {
-                    "type": "string",
-                    "example": "None",
-                    "description": "Any special needs or accommodations required"
+                    "type": "string"
                 },
                 "user_id": {
-                    "type": "string",
-                    "example": "00000000-0000-0000-0000-000000000003",
-                    "format": "uuid",
-                    "description": "Optional user UUID if registrant is an existing user"
+                    "type": "string"
                 }
             }
         },
@@ -457,135 +408,31 @@
             "type": "object",
             "properties": {
                 "address": {
-                    "type": "string",
-                    "example": "Updated Address",
-                    "description": "Updated address"
+                    "type": "string"
                 },
                 "email": {
-                    "type": "string",
-                    "example": "updated@example.com",
-                    "format": "email",
-                    "description": "Updated email address"
+                    "type": "string"
                 },
                 "emergency_contact_name": {
-                    "type": "string",
-                    "example": "Updated Emergency Contact",
-                    "description": "Updated emergency contact name"
+                    "type": "string"
                 },
                 "emergency_contact_phone": {
-                    "type": "string",
-                    "example": "08123456799",
-                    "description": "Updated emergency contact phone"
+                    "type": "string"
                 },
                 "emergency_contact_relation": {
-                    "type": "string",
-                    "example": "spouse",
-                    "description": "Updated relationship to emergency contact"
+                    "type": "string"
                 },
                 "full_name": {
-                    "type": "string",
-                    "example": "Test User Updated",
-                    "description": "Updated full name"
+                    "type": "string"
                 },
                 "notes": {
-                    "type": "string",
-                    "example": "Additional notes",
-                    "description": "Additional notes for the registration"
+                    "type": "string"
                 },
                 "phone": {
-                    "type": "string",
-                    "example": "08123456790",
-                    "description": "Updated phone number"
+                    "type": "string"
                 },
                 "special_needs": {
-                    "type": "string",
-                    "example": "Wheelchair access",
-                    "description": "Updated special needs"
-                }
-            }
-        },
-        "handlers.paymentRequest": {
-            "type": "object",
-            "required": ["amount", "payment_proof_url"],
-            "properties": {
-                "amount": {
-                    "type": "number",
-                    "format": "float64",
-                    "example": 150000,
-                    "description": "Payment amount in Indonesian Rupiah"
-                },
-                "payment_proof_url": {
-                    "type": "string",
-                    "example": "https://example.com/proof.jpg",
-                    "description": "URL to payment proof image"
-                }
-            }
-        },
-        "handlers.paymentResponse": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "example": "payment uploaded",
-                    "description": "Status of the payment upload"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "Payment proof has been uploaded successfully",
-                    "description": "Success message"
-                }
-            }
-        },
-        "handlers.paymentInfo": {
-            "type": "object",
-            "properties": {
-                "registration_id": {
-                    "type": "string",
-                    "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                    "description": "Registration UUID"
-                },
-                "payment": {
-                    "type": "object",
-                    "properties": {
-                        "status": {
-                            "type": "string",
-                            "example": "pending",
-                            "enum": ["pending", "verified", "rejected"],
-                            "description": "Payment verification status"
-                        },
-                        "amount": {
-                            "type": "number",
-                            "format": "float64",
-                            "example": 150000,
-                            "description": "Payment amount"
-                        },
-                        "proof_url": {
-                            "type": "string",
-                            "example": "https://example.com/proof.jpg",
-                            "description": "URL to payment proof"
-                        },
-                        "uploaded_at": {
-                            "type": "string",
-                            "format": "date-time",
-                            "example": "2025-11-24T10:00:00Z",
-                            "description": "Timestamp when payment was uploaded"
-                        }
-                    }
-                }
-            }
-        },
-        "handlers.verifyResponse": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "example": "verified",
-                    "description": "Verification status"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "Payment has been verified successfully",
-                    "description": "Success message"
+                    "type": "string"
                 }
             }
         },
@@ -593,109 +440,61 @@
             "type": "object",
             "properties": {
                 "address": {
-                    "type": "string",
-                    "example": "Test Address",
-                    "description": "Registrant's address"
+                    "type": "string"
                 },
                 "cancellation_reason": {
-                    "type": "string",
-                    "example": "Change of plans",
-                    "description": "Reason for cancellation if cancelled"
+                    "type": "string"
                 },
                 "cancelled_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "example": "2025-11-24T10:30:00Z",
-                    "description": "Timestamp when registration was cancelled"
+                    "type": "string"
                 },
                 "created_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "example": "2025-11-24T09:00:00Z",
-                    "description": "Timestamp when registration was created"
+                    "type": "string"
                 },
                 "email": {
-                    "type": "string",
-                    "example": "test@example.com",
-                    "format": "email",
-                    "description": "Registrant's email"
+                    "type": "string"
                 },
                 "emergency_contact_name": {
-                    "type": "string",
-                    "example": "Emergency Contact",
-                    "description": "Emergency contact name"
+                    "type": "string"
                 },
                 "emergency_contact_phone": {
-                    "type": "string",
-                    "example": "08123456788",
-                    "description": "Emergency contact phone"
+                    "type": "string"
                 },
                 "emergency_contact_relation": {
-                    "type": "string",
-                    "example": "friend",
-                    "description": "Relationship to emergency contact"
+                    "type": "string"
                 },
                 "event_id": {
-                    "type": "string",
-                    "example": "00000000-0000-0000-0000-000000000001",
-                    "format": "uuid",
-                    "description": "Event UUID"
+                    "type": "string"
                 },
                 "full_name": {
-                    "type": "string",
-                    "example": "Test User",
-                    "description": "Registrant's full name"
+                    "type": "string"
                 },
                 "gender": {
-                    "type": "string",
-                    "example": "male",
-                    "enum": ["male", "female"],
-                    "description": "Registrant's gender"
+                    "type": "string"
                 },
                 "notes": {
-                    "type": "string",
-                    "example": "Additional registration notes",
-                    "description": "Additional notes"
+                    "type": "string"
                 },
                 "phone": {
-                    "type": "string",
-                    "example": "08123456789",
-                    "description": "Registrant's phone number"
+                    "type": "string"
                 },
                 "registration_date": {
-                    "type": "string",
-                    "format": "date-time",
-                    "example": "2025-11-24T09:00:00Z",
-                    "description": "Registration date"
+                    "type": "string"
                 },
                 "registration_id": {
-                    "type": "string",
-                    "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                    "format": "uuid",
-                    "description": "Unique registration UUID"
+                    "type": "string"
                 },
                 "special_needs": {
-                    "type": "string",
-                    "example": "None",
-                    "description": "Special needs or accommodations"
+                    "type": "string"
                 },
                 "status": {
-                    "type": "string",
-                    "example": "pending",
-                    "enum": ["pending", "confirmed", "cancelled"],
-                    "description": "Registration status"
+                    "type": "string"
                 },
                 "updated_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "example": "2025-11-24T09:30:00Z",
-                    "description": "Last update timestamp"
+                    "type": "string"
                 },
                 "user_id": {
-                    "type": "string",
-                    "example": "00000000-0000-0000-0000-000000000003",
-                    "format": "uuid",
-                    "description": "User UUID if linked to existing user"
+                    "type": "string"
                 }
             }
         }

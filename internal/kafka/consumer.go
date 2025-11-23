@@ -7,7 +7,7 @@ import (
     "time"
 
     "github.com/segmentio/kafka-go"
-    "example.com/registration-payment-service/internal/repository"
+    "github.com/miftahulhidayati/registration-payment-service/internal/repository"
 )
 
 type EventStatusChanged struct {
